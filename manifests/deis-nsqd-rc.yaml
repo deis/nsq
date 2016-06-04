@@ -18,10 +18,10 @@ spec:
       serviceAccount: deis-nsqd
       containers:
         - name: deis-nsqd
-          image: quay.io/jchauncey/nsq:git-c8ebe4a
+          image: quay.io/deisci/nsq:canary
           imagePullPolicy: Always
           command:
-          - /opt/nsq/start-nsqd
+          - /opt/nsq/bin/start-nsqd
           ports:
           - containerPort: 4151
             name: http
@@ -46,4 +46,3 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
-        

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+export MAX_READY_COUNT=${MAX_READY_COUNT:-10000}
+export BEARER_TOKEN=/var/run/secrets/kubernetes.io/serviceaccount/token
+export DATA_PATH=${DATA_PATH:-/opt/nsq/data}
+if [ -f $BEARER_TOKEN ]; then
+    export TOKEN=$(cat $BEARER_TOKEN)
+    export POD_API_URL=https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT/api/v1/namespaces/$POD_NAMESPACE/pods/$HOSTNAME
+    export NODE_NAME=$(curl -s $POD_API_URL --header "Authorization: Bearer $TOKEN" --insecure | grep nodeName | cut -c 18- | tr -d '",')
+    echo "Set broadcast-address to ${NODE_NAME} and MAX_READY_COUNT to ${MAX_READY_COUNT}"
+    exec nsqd -broadcast-address ${NODE_NAME} -max-rdy-count ${MAX_READY_COUNT} --data-path ${DATA_PATH}
+else
+  echo "Need a bearer token to start nsqd. Please create a service account."
+  exit 1
+fi
