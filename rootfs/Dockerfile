@@ -15,7 +15,7 @@ RUN adduser --system \
     && mv /nsq-0.3.8.linux-amd64.go1.6.2/bin/* /bin \
     && rm -r /nsq-0.3.8.linux-amd64.go1.6.2 \
     && mkdir /opt/nsq/data \
-    && mkdir /opt/nsqlookupd/data
+    && mkdir -p /opt/nsqlookupd/data
 
 COPY . /
 RUN chown -R nsq:nsq /opt/nsq
