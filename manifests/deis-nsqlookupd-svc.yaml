@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: deis-nsqd
+  name: deis-nsqlookupd
   namespace: deis
   labels:
     heritage: deis
-    app: deis-nsqd
+    app: deis-nsqlooupd
 spec:
   ports:
   - port: 4161
