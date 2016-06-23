@@ -27,10 +27,14 @@ update-manifests:
 kube-install: update-manifests
 	kubectl create -f manifests/deis-nsqd-svc.yaml
 	kubectl create -f manifests/deis-nsqd-rc.yaml
+	kubectl create -f manifests/deis-nsqlookupd-svc.yaml
+	kubectl create -f manifests/deis-nsqlookupd-rc.yaml
 
 kube-delete:
 	kubectl delete -f manifests/deis-nsqd-svc.yaml
 	kubectl delete -f manifests/deis-nsqd-rc.yaml
+	kubectl delete -f manifests/deis-nsqlookupd-svc.yaml
+	kubectl delete -f manifests/deis-nsqlookupd-rc.yaml
 
 kube-update: update-manifests
 	kubectl delete -f manifests/deis-nsqd-rc.tmp.yaml
