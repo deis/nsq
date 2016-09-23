@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eo pipefail
 
 export MAX_READY_COUNT=${MAX_READY_COUNT:-10000}
 export BEARER_TOKEN=/var/run/secrets/kubernetes.io/serviceaccount/token
