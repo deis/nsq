@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: deis-nsqlookupd
+  namespace: deis
+  labels:
+    heritage: deis
+    app: deis-nsqlooupd
+spec:
+  ports:
+  - port: 4161
+    name: http
+    targetPort: http
+  - port: 4160
+    name: transport
+    targetPort: transport
+  selector:
+    app: deis-nsqlookupd

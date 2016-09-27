@@ -1,5 +1,8 @@
 FROM quay.io/deis/base:v0.3.4
 
+ENV NSQLOOKUPD_HTTP_PORT 4161
+ENV NSQLOOKUPD_TCP_PORT 4160
+
 RUN adduser --system \
       --shell /bin/bash \
       --disabled-password \
@@ -11,7 +14,8 @@ RUN adduser --system \
     && curl -s https://s3.amazonaws.com/bitly-downloads/nsq/nsq-0.3.8.linux-amd64.go1.6.2.tar.gz | tar xz \
     && mv /nsq-0.3.8.linux-amd64.go1.6.2/bin/* /bin \
     && rm -r /nsq-0.3.8.linux-amd64.go1.6.2 \
-    && mkdir /opt/nsq/data
+    && mkdir /opt/nsq/data \
+    && mkdir -p /opt/nsqlookupd/data
 
 COPY . /
 RUN chown -R nsq:nsq /opt/nsq
