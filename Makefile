@@ -4,6 +4,7 @@ include includes.mk
 DOCKER_HOST = $(shell echo $$DOCKER_HOST)
 BUILD_TAG ?= git-$(shell git rev-parse --short HEAD)
 SHORT_NAME ?= nsq
+DEPLOYMENT_NAME ?= nsqd
 DEIS_REGISTRY ?= ${DEV_REGISTRY}
 IMAGE_PREFIX ?= deis
 
@@ -14,9 +15,6 @@ include versioning.mk
 
 build: docker-build
 push: docker-push
-install: kube-install
-uninstall: kube-delete
-upgrade: kube-update
 
 docker-build:
 	docker build ${DOCKER_BUILD_FLAGS} -t ${IMAGE} rootfs
@@ -30,20 +28,13 @@ test: test-style
 test-style: check-docker
 	${TEST_ENV_PREFIX} shellcheck $(SHELL_SCRIPTS)
 
-update-manifests:
-	sed 's#\(image:\) .*#\1 $(IMAGE)#' manifests/deis-nsqd-rc.yaml > manifests/deis-nsqd-rc.tmp.yaml
+deploy: check-kubectl docker-build docker-push
+	kubectl --namespace=deis patch deployment deis-${DEPLOYMENT_NAME} \
+		--type='json' \
+		-p='[ \
+			{"op": "replace", "path": "/spec/strategy", "value":{"type":"Recreate"}}, \
+			{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value":"$(IMAGE)"}, \
+			{"op": "replace", "path": "/spec/template/spec/containers/0/imagePullPolicy", "value":"Always"} \
+		]'
 
-kube-install: update-manifests
-	kubectl create -f manifests/deis-nsqd-svc.yaml
-	kubectl create -f manifests/deis-nsqd-rc.yaml
-
-kube-delete:
-	kubectl delete -f manifests/deis-nsqd-svc.yaml
-	kubectl delete -f manifests/deis-nsqd-rc.yaml
-
-kube-update: update-manifests
-	kubectl delete -f manifests/deis-nsqd-rc.tmp.yaml
-	kubectl create -f manifests/deis-nsqd-rc.tmp.yaml
-
-.PHONY: build push install uninstall upgrade docker-build clean test test-style \
-	update-manifests kube-install kube-delete kube-update
+.PHONY: build push docker-build clean test test-style deploy
