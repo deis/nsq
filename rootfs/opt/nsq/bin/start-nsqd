@@ -3,4 +3,4 @@ set -eo pipefail
 
 export MAX_READY_COUNT=${MAX_READY_COUNT:-10000}
 export DATA_PATH=${DATA_PATH:-/opt/nsq/data}
-exec nsqd -max-rdy-count ${MAX_READY_COUNT} --data-path ${DATA_PATH}
+exec nsqd -max-rdy-count "${MAX_READY_COUNT}" --data-path "${DATA_PATH}"
